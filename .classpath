@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="G:/apps/winscp/1.5/bukkit-0.0.1-SNAPSHOT.jar" sourcepath="G:/apps/winscp/1.4/Bukkit-for javadoc.zip"/>
+	<classpathentry kind="lib" path="G:/apps/winscp/1.5/Permissions.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>

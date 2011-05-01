@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>AutoRegionGuard</name>
+  <groupId>net.peoplero.arg</groupId>
+  <artifactId>AutoRegionGuard</artifactId>
+  <version>0.1</version>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <scope>compile</scope>      
+    </dependency>
+    <dependency>
+    	<groupId>com.nijikokun.bukkit</groupId>
+    	<artifactId>Permissions</artifactId>
+    	<version>2.7.1</version>
+    	<scope>compile</scope></dependency>
+  </dependencies>
+    
+  <build>
+    <directory>target</directory>
+    <outputDirectory>target/classes</outputDirectory>
+    <finalName>${project.artifactId}</finalName>
+    <sourceDirectory>src/main/java</sourceDirectory>    
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>        
+        <inherited>true</inherited>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+        <version>2.0.2</version></plugin>
+    </plugins>    
+  </build>    
+</project>

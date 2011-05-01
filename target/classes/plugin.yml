@@ -1,0 +1,17 @@
+name: AutoRegionGuard
+main: net.peoplero.arg.ARG
+version: 0.1
+description: AutoRegionGuard Protects areas that you build in automatically.
+author: Friesnadrink
+website: arg.peoplero.net
+commands:
+  arg:
+    description: arg toggle thing
+    usage: |
+           /<command>
+           Example: /<command>
+  god:
+    description: Godmode Command
+    usage: |
+           /<command> [playername]
+           Example: /<command> Timmy
