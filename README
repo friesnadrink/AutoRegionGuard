@@ -1,10 +1,20 @@
 ChangeLog:
-0.1 - Initial Release
+0.2
+Added chunk info tool. Must have arg.user. To use right click a block while holding string.
+Added /arg info. Must have arg.user.
+Added unclaim tool. Must have arg.user (and arg.bypass if you dont own it).To use right click a block while holding feather.
+Added /arg unclaim. Must have arg.user (and arg.bypass if you dont own it). 
+Added /arg friends. Displays your list of friends. Must have arg.user.
+Fixed a error when using /god on other players
+Added /arg toggle. Must have arg.user. Turns on/off(default) autoclaim.
+
+0.1
+Initial Release
 
 
 
-Features to be added:
-/arg unclaim chunk
+To-Do:
+/arg toggle
 /arg give chunk
 scheduled saves
-tool for viewing chunk info
+expire regions for inactive players

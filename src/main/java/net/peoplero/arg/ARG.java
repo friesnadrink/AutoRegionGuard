@@ -31,7 +31,7 @@ public class ARG extends JavaPlugin {
     public static Server Server = null;
     public File directory;
     public static String name = "ARG";
-    public static String version = "0.1";
+    public static String version = "0.2";
     public static String codename = "Cheeseburger";
     public static PermissionHandler permissionHandler;
     private static boolean UsePermissions;
@@ -63,6 +63,9 @@ public class ARG extends JavaPlugin {
     }
 
     public void onEnable() {
+    	Server = this.getServer();
+    	description = this.getDescription();
+    	directory = getDataFolder();
 		//Create the pluginmanager pm.
 		PluginManager pm = getServer().getPluginManager();
 	    //Create BlockPlaced listener
@@ -95,13 +98,40 @@ public class ARG extends JavaPlugin {
         	player = (Player)sender;
         	if (commandName.compareToIgnoreCase("arg") == 0) {
         		if (args.length == 0){
-        				player.sendMessage(ChatColor.RED + "Usage: /arg [addfriend, removefriend, claim, save, load]");
+        				player.sendMessage(ChatColor.RED + "Usage: /arg [toggle, info, addfriend, removefriend, friends, unclaim, claim, save, load]");
         			return true;
         		}
         		if (args[0].compareToIgnoreCase("claim") == 0) {
         			if (canbypass(player)) {
         				//claim region player is standing in
-        				RegionHandler.ClaimRegion(player, player.getLocation().getBlock().getChunk());
+        				RegionHandler.claimChunk(player, player.getLocation().getBlock().getChunk());
+        			} else {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        			return true;
+        		}
+        		if (args[0].compareToIgnoreCase("toggle") == 0) {
+        			if (canuser(player)) {
+        				//claim region player is standing in
+        				RegionHandler.toggleAutoClaim(player);
+        			} else {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        			return true;
+        		}
+        		if (args[0].compareToIgnoreCase("unclaim") == 0) {
+        			if (canbypass(player)) {
+        				//claim region player is standing in
+        				RegionHandler.unClaimChunk(player, player.getLocation().getBlock().getChunk());
+        			} else {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        			return true;
+        		}
+        		if (args[0].compareToIgnoreCase("info") == 0) {
+        			if (canuser(player)) {
+        				//claim region player is standing in
+        				RegionHandler.sendchunkinfo(player, player.getLocation().getBlock().getChunk());
         			} else {
         				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			}
@@ -136,6 +166,13 @@ public class ARG extends JavaPlugin {
         				if (args[1] != null){
         					FriendHandler.removefriend(player, args[1]);
         				} else return false;
+        			} else player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			return true;
+        		}
+        		if (args[0].compareToIgnoreCase("friends") == 0){
+        			if (canuser(player)){
+        				player.sendMessage(ChatColor.YELLOW + "Your Friends are:");
+        				player.sendMessage(ChatColor.YELLOW + FriendHandler.listFriends(player));
         			} else player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			return true;
         		}
@@ -190,7 +227,7 @@ public class ARG extends JavaPlugin {
 		    if (UsePermissions) {
 		        return ARG.permissionHandler.has(player, "arg.user");
 		    }
-		    return player.isOp();
+		    return true;
 		}
 	
     //The method toggleVision which if the player is on the hashmap will remove the player else it will add the player.

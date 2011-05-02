@@ -53,4 +53,13 @@ public class FriendHandler {
 		
 	}
 
+	public static String listFriends(Player player) {
+		String friends = "";
+		for (String friend : FriendsList.get(player.getDisplayName().toLowerCase())){
+			friends = friends + " " + friend;
+		}
+		friends = friends.trim().replace(" ", ", ");
+		return friends;
+	}
+
 }
