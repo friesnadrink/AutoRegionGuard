@@ -1,6 +1,6 @@
 name: AutoRegionGuard
 main: net.peoplero.arg.ARG
-version: 0.2
+version: 0.2.1
 description: AutoRegionGuard Protects areas that you build in automatically.
 author: Friesnadrink
 website: arg.peoplero.net

@@ -20,7 +20,7 @@ public class RegionHandler {
     private final static Map<String, Integer> CurrentChunkc = new HashMap<String, Integer>();
     
     public static void BlockCounter(Player player, Chunk newchunk){
-    	String playername = player.getDisplayName().toLowerCase();
+    	String playername = player.getName().toLowerCase();
     	if (AutoClaimers.contains(playername)){
     		//determine chunk block was placed in
     		if (ExistingChunk.get(playername) == null) ExistingChunk.put(playername, null);
@@ -42,7 +42,7 @@ public class RegionHandler {
     
     
     public static void toggleAutoClaim(Player player){
-    	String playername = player.getDisplayName().toLowerCase();
+    	String playername = player.getName().toLowerCase();
     	if (AutoClaimers.contains(playername)){
     		AutoClaimers.remove(playername);
     		player.sendMessage(ChatColor.YELLOW + "AutoClaim is now off.");
@@ -58,7 +58,7 @@ public class RegionHandler {
 			return;
 		}
 		String strchunk = getstrchunk(targetchunk);
-		String playername = player.getDisplayName().toLowerCase();
+		String playername = player.getName().toLowerCase();
 		if (OwnedRegions.containsKey(playername) == false){
 			ArrayList<String> list = new ArrayList<String>();
 			OwnedRegions.put(playername, list);
@@ -72,18 +72,18 @@ public class RegionHandler {
 	
 	public static void unClaimChunk(Player player, Chunk targetchunk) {
 		String strowner = ClaimCheck(targetchunk);
-		String strplayer = player.getDisplayName().toLowerCase();
+		String strplayer = player.getName().toLowerCase();
 		String strchunk = getstrchunk(targetchunk);
 		if (strowner == ""){
 			player.sendMessage(ChatColor.RED + "Chunk is not claimed!");
 		}else{
-			if (ARG.canbypass(player) || strowner == strplayer){
+			if (ARG.canbypass(player) || strowner.equalsIgnoreCase(strplayer)){
 				if (OwnedRegions.get(strowner).remove(strchunk)) {
 					player.sendMessage(ChatColor.YELLOW + strowner + " no longer owns " + strchunk + ".");
 					if (strplayer.compareToIgnoreCase(strowner) != 0){
 						Player owner = ARG.Server.getPlayer(strowner);
 						if (owner != null){
-							owner.sendMessage(ChatColor.YELLOW + player.getDisplayName() + " has unclaimed your chunk: " + strchunk);
+							owner.sendMessage(ChatColor.YELLOW + player.getName() + " has unclaimed your chunk: " + strchunk);
 						}
 					}
 				}else{
@@ -114,7 +114,7 @@ public class RegionHandler {
 
 	public static boolean CanBuildHere(Player player, Chunk targetchunk) {
 		if (ARG.canbypass(player)) return true;
-		String playername = player.getDisplayName().toLowerCase();
+		String playername = player.getName().toLowerCase();
 		if (OwnedRegions.containsKey(playername)){
 			ArrayList<String> list = OwnedRegions.get(playername);
 			String strchunk = getstrchunk(targetchunk);
@@ -126,6 +126,7 @@ public class RegionHandler {
 		if (FriendHandler.isafriend(player, owner)) return true;
 		return false;
 	}
+
 
 	public static void saveRegions() {
 		FileHandler.saveMultiMap(OwnedRegions, "Regions.txt");

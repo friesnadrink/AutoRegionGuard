@@ -25,7 +25,7 @@ public class ARGEntityListener extends EntityListener {
     	Entity entity = event.getEntity();
     	if (entity instanceof Player) {
             Player player = (Player) entity;
-            if (ARG.isGod(player.getDisplayName().toLowerCase())) event.setCancelled(true);
+            if (ARG.isGod(player.getName().toLowerCase())) event.setCancelled(true);
 		}
 	}
     

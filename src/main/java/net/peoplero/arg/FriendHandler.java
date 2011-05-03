@@ -12,7 +12,7 @@ public class FriendHandler {
 	private static Map<String, ArrayList<String>> FriendsList = new HashMap<String, ArrayList<String>>(); 
 
 	public static void addfriend(Player player, String friend) {
-		String playername = player.getDisplayName().toLowerCase();
+		String playername = player.getName().toLowerCase();
 		if (FriendsList.containsKey(playername) == false){
 			ArrayList<String> blanklist = new ArrayList<String>();
 			FriendsList.put(playername, blanklist);
@@ -24,7 +24,7 @@ public class FriendHandler {
 	}
 
 	public static void removefriend(Player player, String friend) {
-		String playername = player.getDisplayName().toLowerCase();
+		String playername = player.getName().toLowerCase();
 		if (FriendsList.containsKey(playername) == false){
 			player.sendMessage(ChatColor.RED + "You don't have any friends!");
 			return;
@@ -35,7 +35,7 @@ public class FriendHandler {
 	}
 	
 	public static boolean isafriend(Player player, String owner){
-		String playername = player.getDisplayName().toLowerCase();
+		String playername = player.getName().toLowerCase();
 		if (FriendsList.containsKey(owner.toLowerCase())){
 			if (FriendsList.get(owner.toLowerCase()).contains(playername)) return true;
 		}
@@ -55,7 +55,7 @@ public class FriendHandler {
 
 	public static String listFriends(Player player) {
 		String friends = "";
-		for (String friend : FriendsList.get(player.getDisplayName().toLowerCase())){
+		for (String friend : FriendsList.get(player.getName().toLowerCase())){
 			friends = friends + " " + friend;
 		}
 		friends = friends.trim().replace(" ", ", ");

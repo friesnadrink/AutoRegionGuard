@@ -1,4 +1,7 @@
 ChangeLog:
+0.2.1
+Fixed incompatibility with EssentialsChat (Thanks iggiiggi)
+
 0.2
 Added chunk info tool. Must have arg.user. To use right click a block while holding string.
 Added /arg info. Must have arg.user.
@@ -14,7 +17,7 @@ Initial Release
 
 
 To-Do:
-/arg toggle
 /arg give chunk
-scheduled saves
+scheduled saves (right now saves only happen at server stop)
 expire regions for inactive players
+add /help support

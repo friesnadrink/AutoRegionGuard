@@ -31,7 +31,7 @@ public class ARG extends JavaPlugin {
     public static Server Server = null;
     public File directory;
     public static String name = "ARG";
-    public static String version = "0.2";
+    public static String version = "0.2.1";
     public static String codename = "Cheeseburger";
     public static PermissionHandler permissionHandler;
     private static boolean UsePermissions;
@@ -233,7 +233,7 @@ public class ARG extends JavaPlugin {
     //The method toggleVision which if the player is on the hashmap will remove the player else it will add the player.
     //Also sends user a message to notify them.
     public void toggleGod(Player player) {
-    	String playername = player.getDisplayName().toLowerCase();
+    	String playername = player.getName().toLowerCase();
 		if (ARG.godusers.contains(playername)) {
 			ARG.godusers.remove(playername);
 			player.sendMessage(ChatColor.YELLOW + "Godmode disabled.");
@@ -250,11 +250,11 @@ public class ARG extends JavaPlugin {
     		if (ARG.godusers.contains(playername)) {
     			ARG.godusers.remove(playername);
     			player.sendMessage(ChatColor.YELLOW + "Godmode disabled on " + playername + ".");
-    			receiver.sendMessage(player.getDisplayName() + " has disabled godmode on you");
+    			receiver.sendMessage(ChatColor.YELLOW + player.getName() + " has disabled godmode on you");
     		} else {
     			ARG.godusers.add(playername);
     			player.sendMessage(ChatColor.YELLOW + "Godmode enabled on " + playername + ".");
-    			receiver.sendMessage(player.getDisplayName() + " has enabled godmode on you");
+    			receiver.sendMessage(ChatColor.YELLOW + player.getName() + " has enabled godmode on you");
     		}
     	}
     }
@@ -283,7 +283,6 @@ public class ARG extends JavaPlugin {
 	}
 	
 	private void loadAll() {
-		// TODO Auto-generated method stub
 		RegionHandler.loadRegions();
 		FriendHandler.loadFriends();
 	}
