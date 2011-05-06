@@ -1,14 +1,18 @@
 package net.peoplero.arg;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 public class RegionHandler {
+	
+	public static Logger log = Logger.getLogger("Minecraft");
     
 	//Create hashmap for players with autoclaim enabled
 	private static ArrayList<String> AutoClaimers = new ArrayList<String>();
@@ -16,6 +20,8 @@ public class RegionHandler {
     private final static Map<String, Chunk> ExistingChunk = new HashMap<String, Chunk>();
     //Create hashmap for owned regions
     private static Map<String, ArrayList<String>> OwnedRegions = new HashMap<String, ArrayList<String>>(); 
+    //Create hashmap for tracking the last time a player was online
+    private static Map<String, Date> LastOnline = new HashMap<String, Date>(); 
     //Create hashmap for counting changes in players' current chunk
     private final static Map<String, Integer> CurrentChunkc = new HashMap<String, Integer>();
     
@@ -29,7 +35,7 @@ public class RegionHandler {
     			CurrentChunkc.put(playername, CurrentChunkc.get(playername)+1);
     			if (CurrentChunkc.get(playername) > 15){
     				claimChunk(player, newchunk);
-    				CurrentChunkc.put(playername, 1);
+    				CurrentChunkc.put(playername, 0);
     			}
     		}else{
     			CurrentChunkc.put(playername, 1);
@@ -145,11 +151,72 @@ public class RegionHandler {
 	}
 
 	public static void sendchunkinfo(Player player, Chunk targetchunk) {
-		String strclaimed = RegionHandler.ClaimCheck(targetchunk);
+		String strclaimed = ClaimCheck(targetchunk);
 		if (strclaimed == ""){
-			player.sendMessage(ChatColor.YELLOW + "Chunk '" + RegionHandler.getstrchunk(targetchunk) + "' is not claimed.");
+			player.sendMessage(ChatColor.YELLOW + "Chunk '" + getstrchunk(targetchunk) + "' is not claimed.");
 		}else{
-			player.sendMessage(ChatColor.YELLOW + "Chunk '" + RegionHandler.getstrchunk(targetchunk) + "' is claimed by " + strclaimed + ".");
+			player.sendMessage(ChatColor.YELLOW + "Chunk '" + getstrchunk(targetchunk) + "' is claimed by " + strclaimed + ".");
+		}
+	}
+
+
+	public static boolean removePlayer(String playername) {
+		boolean retvalue = false;
+		if (OwnedRegions.containsKey(playername)){
+			OwnedRegions.remove(playername);
+			retvalue = true;
+		}
+		if (LastOnline.containsKey(playername)){
+			LastOnline.remove(playername);
+			retvalue = true;
+		}
+		return retvalue;
+	}
+
+
+	public static void saveLastOnline() {
+		FileHandler.saveHashMap(LastOnline, "LastOnline.txt");
+	}
+
+
+	public static void loadLastOnline() {
+		LastOnline = FileHandler.loadHashMap("LastOnline.txt");
+	}
+
+
+	public static void updateLastOnline(Player player) {
+		Date now = new Date();
+		String playername = player.getName().toLowerCase();
+		LastOnline.put(playername, now);
+	}
+	
+	public static void checkLastOnline(){
+		int counter = 0;
+		long now = new Date().getTime();
+		for (String playername : LastOnline.keySet()){
+			long lo = LastOnline.get(playername).getTime();
+			if (lo < now-30*86400000L){
+				long temp = lo-now;
+				System.out.println(playername + " comparison: " + temp);
+				removePlayer(playername);
+				counter = counter +1;
+				log.info("[ARG] "+playername+" has expired.");
+			}
+		}
+		log.info("[ARG] "+counter+" players expired.");
+	}
+
+
+	public static void removeClaimer(Player player) {
+		String playername = player.getName().toLowerCase();
+		if (AutoClaimers.contains(playername)){
+			AutoClaimers.remove(playername);
+		}
+		if (ExistingChunk.containsKey(playername)){
+			ExistingChunk.remove(playername);
+		}
+		if (CurrentChunkc.containsKey(playername)){
+			CurrentChunkc.remove(playername);
 		}
 	}
 

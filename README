@@ -1,4 +1,12 @@
 ChangeLog:
+0.3
+/arg removeplayer [playername]. Must have arg.bypass. Removes all claims [playername] has.
+scheduled saves (every 30min)
+ARG now creates LastOnline.txt. Format [playername];yyyy/MM/dd/HH
+expire regions for inactive players
+/arg checklastonline. Must have arg.saveload. Manually executes code to expire players.
+Changed permission node for /arg claim to arg.claim
+
 0.2.1
 Fixed incompatibility with EssentialsChat (Thanks iggiiggi)
 
@@ -18,6 +26,9 @@ Initial Release
 
 To-Do:
 /arg give chunk
-scheduled saves (right now saves only happen at server stop)
-expire regions for inactive players
 add /help support
+add configurable options
+	toggle on/off by default
+	time to expire players
+	info tool
+	unclaim tool

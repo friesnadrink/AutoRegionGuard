@@ -31,8 +31,7 @@ public class ARG extends JavaPlugin {
     public static Server Server = null;
     public File directory;
     public static String name = "ARG";
-    public static String version = "0.2.1";
-    public static String codename = "Cheeseburger";
+    public static String version = "0.3";
     public static PermissionHandler permissionHandler;
     private static boolean UsePermissions;
     
@@ -56,9 +55,10 @@ public class ARG extends JavaPlugin {
     }
     
     public void onDisable() {
-    	log.info("ARG is saving Regions...");
+    	log.info("[ARG] Saving Regions...");
     	saveAll();
-    	log.info("Done!");
+    	log.info("[ARG] Unscheduling tasks.");
+    	FileHandler.unScheduleTasks();
         log.info("ARG Disabled");
     }
 
@@ -66,8 +66,9 @@ public class ARG extends JavaPlugin {
     	Server = this.getServer();
     	description = this.getDescription();
     	directory = getDataFolder();
+    	instance = this;
 		//Create the pluginmanager pm.
-		PluginManager pm = getServer().getPluginManager();
+		PluginManager pm = Server.getPluginManager();
 	    //Create BlockPlaced listener
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.High, this);
@@ -76,6 +77,7 @@ public class ARG extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_BUCKET_EMPTY, playerListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.PLAYER_BUCKET_FILL, playerListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.High, this);
+		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.High, this);
 
 		//Get the information from the yml file.
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -83,8 +85,11 @@ public class ARG extends JavaPlugin {
 		setupPermissions();
 		
 		//load pre-existing values from files
-		log.info("ARG is checking/loading files...");
+		log.info("[ARG] Checking/loading files...");
 		loadAll();
+		
+		log.info("[ARG] Scheduling tasks...");
+		FileHandler.scheduleTasks();
 		
 		//Print that the plugin has been enabled!
 		log.info( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
@@ -93,16 +98,82 @@ public class ARG extends JavaPlugin {
 
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         Player player = null;
+        if (sender instanceof Player) player = (Player)sender;
         String commandName = command.getName().toLowerCase();
-        if (sender instanceof Player) {
-        	player = (Player)sender;
-        	if (commandName.compareToIgnoreCase("arg") == 0) {
-        		if (args.length == 0){
-        				player.sendMessage(ChatColor.RED + "Usage: /arg [toggle, info, addfriend, removefriend, friends, unclaim, claim, save, load]");
-        			return true;
+        if (commandName.compareToIgnoreCase("arg") == 0) {
+        	if (args.length == 0){
+        		if (player != null){
+        			player.sendMessage(ChatColor.RED + "Usage: /arg [toggle, info, addfriend, removefriend, friends, unclaim, claim, removeplayer, save, load]");
+        		}else{
+        			System.out.println("Usage: /arg [removeplayer, save, load]");
         		}
+        		return true;
+        	}
+        	if (args[0].compareToIgnoreCase("checklastonline") == 0){
+        		if (cansaveload(player)){
+        			RegionHandler.checkLastOnline();
+        		} else {
+        			if (player != null) {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        		}
+        		return true;
+        	}
+        	if (args[0].compareToIgnoreCase("save") == 0){
+        		if (cansaveload(player)){
+        			saveAll();
+        		} else {
+        			if (player != null) {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        		}
+        		return true;
+        	}
+        	if (args[0].compareToIgnoreCase("load") == 0){
+        		if (cansaveload(player)){
+        			loadAll();
+        		} else {
+        			if (player != null) {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        		}
+        		return true;
+        	}
+        	if (args[0].compareToIgnoreCase("removeplayer") == 0){
+        		if (canbypass(player)){
+        			if (args.length == 2){
+        				if (RegionHandler.removePlayer(args[1])){
+        					if (player != null) {
+        						player.sendMessage(ChatColor.YELLOW + args[1] + " no longer owns any regions.");
+        					}else{
+        						System.out.println(args[1] + " no longer owns any regions.");
+        					}
+        				}else{
+        					if (player != null) {
+        						player.sendMessage(ChatColor.RED + args[1] + " doesn't own any regions.");
+        					}else{
+        						System.out.println(args[1] + " doesn't own any regions.");
+        					}
+        				}
+        			}else{
+            			if (player != null) {
+            				player.sendMessage(ChatColor.RED + "Usage: /arg removeplayer [playername]");
+            			}else{
+            				System.out.println("Usage: /arg removeplayer [playername]");
+            			}
+        			}
+        		} else {
+        			if (player != null) {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        		}
+        		return true;
+        	}
+        }
+        if (player != null) {
+        	if (args.length >= 1) {
         		if (args[0].compareToIgnoreCase("claim") == 0) {
-        			if (canbypass(player)) {
+        			if (canclaim(player)) {
         				//claim region player is standing in
         				RegionHandler.claimChunk(player, player.getLocation().getBlock().getChunk());
         			} else {
@@ -132,22 +203,6 @@ public class ARG extends JavaPlugin {
         			if (canuser(player)) {
         				//claim region player is standing in
         				RegionHandler.sendchunkinfo(player, player.getLocation().getBlock().getChunk());
-        			} else {
-        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
-        			}
-        			return true;
-        		}
-        		if (args[0].compareToIgnoreCase("save") == 0){
-        			if (cansaveload(player)){
-        				saveAll();
-        			} else {
-        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
-        			}
-        			return true;
-        		}
-        		if (args[0].compareToIgnoreCase("load") == 0){
-        			if (cansaveload(player)){
-        				loadAll();
         			} else {
         				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			}
@@ -211,6 +266,12 @@ public class ARG extends JavaPlugin {
 		    }
 		    return player.isOp();
 		}
+		public static boolean canclaim(Player player) {
+		    if (UsePermissions) {
+		        return ARG.permissionHandler.has(player, "arg.claim");
+		    }
+		    return player.isOp();
+		}
 		public static boolean cangodmode(Player player) {
 		    if (UsePermissions) {
 		        return ARG.permissionHandler.has(player, "arg.god");
@@ -230,7 +291,7 @@ public class ARG extends JavaPlugin {
 		    return true;
 		}
 	
-    //The method toggleVision which if the player is on the hashmap will remove the player else it will add the player.
+    //The method toggleGod which if the player is on the hashmap will remove the player else it will add the player.
     //Also sends user a message to notify them.
     public void toggleGod(Player player) {
     	String playername = player.getName().toLowerCase();
@@ -277,13 +338,16 @@ public class ARG extends JavaPlugin {
     	debugees.put(player, value);
 	}
 	
-	public void saveAll(){
+	public static void saveAll(){
 		RegionHandler.saveRegions();
+		RegionHandler.saveLastOnline();
 		FriendHandler.saveFriends();
+
 	}
 	
 	private void loadAll() {
 		RegionHandler.loadRegions();
+		RegionHandler.loadLastOnline();
 		FriendHandler.loadFriends();
 	}
 }

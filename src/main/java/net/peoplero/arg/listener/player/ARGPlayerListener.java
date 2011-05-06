@@ -13,6 +13,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ARGPlayerListener extends PlayerListener {
 	
@@ -88,6 +90,20 @@ public class ARGPlayerListener extends PlayerListener {
     			}
     		}
     	}
+    }
+    
+    @Override
+    public void onPlayerLogin(PlayerLoginEvent event) {
+    	Player player = event.getPlayer();
+    	RegionHandler.updateLastOnline(player);
+    	
+    }
+    
+    @Override
+    public void onPlayerQuit(PlayerQuitEvent event) {
+    	Player player = event.getPlayer();
+    	RegionHandler.updateLastOnline(player);
+    	RegionHandler.removeClaimer(player);
     }
     
 }

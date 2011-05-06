@@ -8,17 +8,22 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 public class FileHandler {
-	
-public static Logger log = Logger.getLogger("Minecraft");
+
+	public static Logger log = Logger.getLogger("Minecraft");
 	private static String strpath = "plugins" + File.separator + "ARG" + File.separator;
 	static File regionsfile = new File(strpath + "Regions.txt");
-	
+	static int RecurringSave = 0;
+	static int RecurringExpire = 0;
+
 	static DataOutputStream dos;
 
 	/*
@@ -93,7 +98,7 @@ public static Logger log = Logger.getLogger("Minecraft");
 				counter = counter + 1;
 			}
 		}
-		log.info("Saved "+counter+ " items from " + file);
+		log.info("[ARG] Saved "+counter+ " items in " + file);
 	}
 	
 	public static Map<String, ArrayList<String>> loadMultiMap(String file){
@@ -118,35 +123,73 @@ public static Logger log = Logger.getLogger("Minecraft");
 					counter = counter + 1;
 				}
 			}
-
-
-
-			//		if (regionsfile.exists()){
-			//			Properties prop = new Properties();
-			//			int counter = 0;
-			//			try{
-			//				FileInputStream in = new FileInputStream(regionsfile);
-			//				prop.load(in);
-			//				for (Object key : prop.keySet()){
-			//					String[] values = prop.getProperty(key.toString()).split(";");
-			//					String playername = values[0];
-			//					String strchunk = values[1];
-			//					if (OwnedRegions.containsKey(playername) == false){
-			//						ArrayList<String> list = new ArrayList<String>();
-			//						OwnedRegions.put(playername, list);
-			//					}
-			//					ArrayList<String> list = OwnedRegions.get(playername);
-			//					list.add(strchunk);
-			//					OwnedRegions.put(playername, list);
-			//					counter = counter + 1;
-			//				}
-			//				log.info("Loaded "+counter+" regions.");
-			//			} catch (Exception ex){
-			//			}
-			//		}
 		}
-		log.info("Loaded "+counter+" items from " + file);
+		log.info("[ARG] Loaded "+counter+" items from " + file);
 		return multiMap;
 	}
 	
+	public static void saveHashMap(Map<String, Date> hashMap, String file){
+		String filepath = strpath + file;
+		if (isFileExists(filepath)) deleteFile(filepath);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH");
+		int counter = 0;
+		for (String playername : hashMap.keySet()){
+			String strvalue = sdf.format(hashMap.get(playername));
+			writeToFile(filepath, playername + ";" + strvalue, true, true);
+			//System.out.println("Saved " + playername + ";" + strvalue);
+			counter = counter + 1;
+		}
+		log.info("[ARG] Saved "+counter+ " items in " + file);
+	}
+	
+	public static Map<String, Date> loadHashMap(String file){
+		Map<String, Date> hashMap = new HashMap<String, Date>();
+		String filepath = strpath + file;
+		int counter = 0;
+		if (isFileExists(filepath)){
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH");
+			ArrayList<String> lines = readFromFile(filepath);
+			for (String line : lines){
+				String[] something = line.split(";");
+				if (something.length == 2){
+					String playername=something[0].toLowerCase();
+					Date d;
+					try {
+						d = sdf.parse(something[1]);
+						hashMap.put(playername, d);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					counter = counter + 1;
+				}
+			}
+		}
+		log.info("[ARG] Loaded "+counter+" items from " + file);
+		return hashMap;
+	}
+
+	public static void scheduleTasks() {
+		RecurringSave = ARG.Server.getScheduler().scheduleSyncRepeatingTask(ARG.instance, new Runnable() {
+            public void run() {
+              ARG.saveAll();
+            }
+        }, 1800 * 20L, 1800 * 20L);
+		RecurringExpire = ARG.Server.getScheduler().scheduleSyncRepeatingTask(ARG.instance, new Runnable() {
+			public void run() {
+				RegionHandler.checkLastOnline();
+			}
+		}, 1800 * 20L, 1800 * 20L);
+	}
+	
+	public static void unScheduleTasks() {
+		if (RecurringSave != 0){
+			ARG.instance.getServer().getScheduler().cancelTask(RecurringSave);
+			RecurringSave = 0;
+		}
+		if (RecurringExpire != 0){
+			ARG.instance.getServer().getScheduler().cancelTask(RecurringExpire);
+			RecurringExpire = 0;
+		}
+	}
 }
