@@ -61,7 +61,7 @@ public class ARGBlockListener extends BlockListener {
 			Chunk newchunk = event.getBlock().getChunk();
 			if (plugin.RegionHandler.ClaimCheck(newchunk) != ""){
 				event.setCancelled(true);
-				System.out.println("cancelled fire!");
+				//System.out.println("cancelled fire!");
 			}
 		}
 	}
