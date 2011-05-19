@@ -1,5 +1,9 @@
 ChangeLog:
+0.4.1
+removed annoying fire debug message
+
 0.4
+added fire protection for claimed chunks(fire won't spread or destroy blocks in claims)
 /arg [removeplayer, save, load, checklastonline] can all be used from the console
 added properties file to change many different settings such as autoclaim being on/off by default
 added a maximum for owned chunks (configurable setting, bypassed by arg.bypass)
