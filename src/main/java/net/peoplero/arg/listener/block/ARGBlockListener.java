@@ -1,21 +1,21 @@
 package net.peoplero.arg.listener.block;
 
 import net.peoplero.arg.ARG;
-import net.peoplero.arg.RegionHandler;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class ARGBlockListener extends BlockListener 
-{
-    @SuppressWarnings("unused")
-    private final ARG plugin;
-    
-    //public RegionHandler RegionHandlerO = new RegionHandler();
+public class ARGBlockListener extends BlockListener {
+	
+	
+	private final ARG plugin;
+	public static boolean fireprotection;
     
     public ARGBlockListener(final ARG plugin)
     {
@@ -27,11 +27,11 @@ public class ARGBlockListener extends BlockListener
 		//gather info on where the block was placed and who placed it
         Chunk newchunk = event.getBlock().getChunk();
     	final Player player = event.getPlayer();
-    	String claimcheck = RegionHandler.ClaimCheck(newchunk);
+    	String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
         if (claimcheck == ""){
-        	RegionHandler.BlockCounter(player, newchunk);
+        	plugin.RegionHandler.BlockCounter(player, newchunk);
         }else{
-        	if (RegionHandler.CanBuildHere(player, newchunk) == false){
+        	if (plugin.RegionHandler.CanBuildHere(player, newchunk) == false){
         		event.setBuild(false);
         		player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't build here.");
         	}
@@ -43,15 +43,39 @@ public class ARGBlockListener extends BlockListener
 		//gather info on where the block was broken and who broke it
         Chunk newchunk = event.getBlock().getChunk();
         final Player player = event.getPlayer();
-    	String claimcheck = RegionHandler.ClaimCheck(newchunk);
+    	String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
         if (claimcheck == ""){
         	//RegionHandlerO.BlockCounter(player, newchunk);
         }else{
-        	if (RegionHandler.CanBuildHere(player, newchunk)){
+        	if (plugin.RegionHandler.CanBuildHere(player, newchunk)){
         	}else{
         		event.setCancelled(true);
         		player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't mine here.");
         	}
         }
+	}
+	
+	@Override
+	public void onBlockBurn(BlockBurnEvent event){
+		if (fireprotection){
+			Chunk newchunk = event.getBlock().getChunk();
+			if (plugin.RegionHandler.ClaimCheck(newchunk) != ""){
+				event.setCancelled(true);
+				System.out.println("cancelled fire!");
+			}
+		}
+	}
+	
+	@Override
+	public void onBlockIgnite(BlockIgniteEvent event){
+		if (fireprotection){
+			if (event.getCause() == IgniteCause.SPREAD){
+				Chunk newchunk = event.getBlock().getChunk();
+				if (plugin.RegionHandler.ClaimCheck(newchunk) != ""){
+					event.setCancelled(true);
+					System.out.println("cancelled fire!");
+				}
+			}
+		}
 	}
 }

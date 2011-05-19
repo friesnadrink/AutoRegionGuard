@@ -1,4 +1,12 @@
 ChangeLog:
+0.4
+/arg [removeplayer, save, load, checklastonline] can all be used from the console
+added properties file to change many different settings such as autoclaim being on/off by default
+added a maximum for owned chunks (configurable setting, bypassed by arg.bypass)
+fixed /arg claim permission issue
+added /arg unclaim [<world> <xvalue> <zvalue>] for long distance unclaiming
+added /arg info [<world> <xvalue> <zvalue>] for long distance info
+
 0.3
 /arg removeplayer [playername]. Must have arg.bypass. Removes all claims [playername] has.
 scheduled saves (every 30min)

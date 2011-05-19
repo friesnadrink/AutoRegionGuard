@@ -19,12 +19,17 @@ import java.util.logging.Logger;
 public class FileHandler {
 
 	public static Logger log = Logger.getLogger("Minecraft");
-	private static String strpath = "plugins" + File.separator + "ARG" + File.separator;
+	ARG plugin;
+	static String strpath = "plugins" + File.separator + "ARG" + File.separator;
 	static File regionsfile = new File(strpath + "Regions.txt");
 	static int RecurringSave = 0;
 	static int RecurringExpire = 0;
 
 	static DataOutputStream dos;
+	
+	FileHandler(ARG plugin) {
+		this.plugin = plugin;
+	}
 
 	/*
 	 * Utility method to write a given text to a file
@@ -169,20 +174,20 @@ public class FileHandler {
 		return hashMap;
 	}
 
-	public static void scheduleTasks() {
+	public void scheduleTasks() {
 		RecurringSave = ARG.Server.getScheduler().scheduleSyncRepeatingTask(ARG.instance, new Runnable() {
             public void run() {
-              ARG.saveAll();
+            	plugin.saveAll();
             }
         }, 1800 * 20L, 1800 * 20L);
 		RecurringExpire = ARG.Server.getScheduler().scheduleSyncRepeatingTask(ARG.instance, new Runnable() {
 			public void run() {
-				RegionHandler.checkLastOnline();
+				plugin.RegionHandler.checkLastOnline();
 			}
 		}, 1800 * 20L, 1800 * 20L);
 	}
 	
-	public static void unScheduleTasks() {
+	public void unScheduleTasks() {
 		if (RecurringSave != 0){
 			ARG.instance.getServer().getScheduler().cancelTask(RecurringSave);
 			RecurringSave = 0;

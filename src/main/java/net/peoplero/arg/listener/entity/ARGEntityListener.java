@@ -1,8 +1,6 @@
 package net.peoplero.arg.listener.entity;
 
 import net.peoplero.arg.ARG;
-import net.peoplero.arg.RegionHandler;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,7 +11,6 @@ import org.bukkit.event.entity.EntityListener;
 public class ARGEntityListener extends EntityListener {
 	
 
-    @SuppressWarnings("unused")
     private final ARG plugin;
 
     public ARGEntityListener(final ARG plugin) {
@@ -38,7 +35,7 @@ public class ARGEntityListener extends EntityListener {
     @Override
 	public void onEntityExplode(EntityExplodeEvent event){
     	for (Block block : event.blockList()){
-    		if (RegionHandler.ClaimCheck(block.getChunk()) != "") event.setCancelled(true);
+    		if (plugin.RegionHandler.ClaimCheck(block.getChunk()) != "") event.setCancelled(true);
     	}
 	}
     
