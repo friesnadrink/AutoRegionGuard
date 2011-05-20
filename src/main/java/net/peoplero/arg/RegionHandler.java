@@ -3,7 +3,9 @@ package net.peoplero.arg;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -16,7 +18,7 @@ public class RegionHandler {
     ARG plugin;
     
 	//Create hashmap for players with autoclaim enabled
-	public static ArrayList<String> AutoClaimers = new ArrayList<String>();
+	public static Set<String> AutoClaimers = new HashSet<String>();
 	//Create hashmap for players' current chunk
     private final static Map<String, Chunk> ExistingChunk = new HashMap<String, Chunk>();
     //Create hashmap for owned regions
@@ -183,6 +185,23 @@ public class RegionHandler {
 				retval = retval + "  " + chunk;
 			}
 			retval = retval.trim().replace("  ", ", ");
+		}
+		return retval;
+	}
+	
+	public int countclaims(String playername){
+		int retval = 0;
+		if (OwnedRegions.containsKey(playername)){
+			retval = OwnedRegions.get(playername).size();
+		}
+		return retval;
+	}
+	
+	public int countclaims(Player player){
+		String playername = player.getName().toLowerCase();
+		int retval = 0;
+		if (OwnedRegions.containsKey(playername)){
+			retval = OwnedRegions.get(playername).size();
 		}
 		return retval;
 	}

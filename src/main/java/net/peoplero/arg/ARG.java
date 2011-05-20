@@ -212,14 +212,16 @@ public class ARG extends JavaPlugin {
         		if (args[0].compareToIgnoreCase("list") == 0) {
         			if (args.length == 2){
         				if (pt.canbypass(player)){
-        					player.sendMessage(ChatColor.YELLOW + args[1] + " owns: " + RegionHandler.listclaims(args[1]));
+        					player.sendMessage(ChatColor.YELLOW + args[1] + " owns " + RegionHandler.countclaims(args[1]) + " regions:");
+        					player.sendMessage(ChatColor.YELLOW + RegionHandler.listclaims(args[1]));
         				}else{
         					player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         				}
         				return true;
         			}
         			if (pt.canuser(player)) {
-        				player.sendMessage(ChatColor.YELLOW + "You own: " + RegionHandler.listclaims(player));
+        				player.sendMessage(ChatColor.YELLOW + "You own " + RegionHandler.countclaims(player) + " regions:");
+        				player.sendMessage(ChatColor.YELLOW + RegionHandler.listclaims(player));
         			} else {
         				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			}
