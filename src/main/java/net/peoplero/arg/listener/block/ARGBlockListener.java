@@ -76,6 +76,20 @@ public class ARGBlockListener extends BlockListener {
 					//System.out.println("cancelled fire!");
 				}
 			}
+			if (event.getCause() == IgniteCause.FLINT_AND_STEEL){
+		        Chunk newchunk = event.getBlock().getChunk();
+		        final Player player = event.getPlayer();
+		    	String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
+		        if (claimcheck == ""){
+		        	//RegionHandlerO.BlockCounter(player, newchunk);
+		        }else{
+		        	if (plugin.RegionHandler.CanBuildHere(player, newchunk)){
+		        	}else{
+		        		event.setCancelled(true);
+		        		player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't burn here.");
+		        	}
+		        }
+			}
 		}
 	}
 }
