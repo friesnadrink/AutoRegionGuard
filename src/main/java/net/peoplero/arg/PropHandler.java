@@ -20,7 +20,8 @@ public class PropHandler {
     "claimthreshold - (default 16)How many blocks a user needs to place in a chunk before it gets autoclaimed\n" + 
     "fireprotection - (default true)true/false Protects claimed chunks from fire spread(blocks can still be set ablaze by flint and finder/lava)\n" + 
     "infotool - (default 287)ItemID to use as infotool\n" + 
-    "unclaimtool - (default 288)ItemID to use as unclaimtool";
+    "unclaimtool - (default 288)ItemID to use as unclaimtool\n" +
+    "protectchests - (default true)true/false weather to protect chests in claimed chunks or not";
     
     static void loadProperties(){
     	RegionHandler.maxchunks = 30;
@@ -30,6 +31,8 @@ public class PropHandler {
     	ARGBlockListener.fireprotection = true;
     	ARGPlayerListener.infotool = 287;
     	ARGPlayerListener.unclaimtool = 288;
+    	ARGPlayerListener.protectchests = true;
+    	
     	if(!propfile.exists()){
     		try { //try catch clause explained below in tutorial
     			propfile.createNewFile(); //creates the file zones.dat
@@ -39,6 +42,7 @@ public class PropHandler {
     			storevalue("claimthreshold", RegionHandler.claimthreshold);
     			storevalue("infotool", ARGPlayerListener.infotool);
     			storevalue("unclaimtool", ARGPlayerListener.unclaimtool);
+    			storevalue("protectchests", ARGPlayerListener.protectchests);
     		} catch (IOException ex) {
     			ex.printStackTrace();
     		}
@@ -80,6 +84,11 @@ public class PropHandler {
     				ARGPlayerListener.unclaimtool = Integer.parseInt(prop.getProperty("unclaimtool"));
     			}else{
     				storevalue("unclaimtool", ARGPlayerListener.unclaimtool);
+    			}
+    			if (prop.containsKey("protectchests")){
+    				ARGPlayerListener.protectchests = Boolean.parseBoolean(prop.getProperty("protectchests"));
+    			}else{
+    				storevalue("protectchests", ARGPlayerListener.protectchests);
     			}
     			in.close(); //Closes the input stream.
     		}catch (IOException ex){

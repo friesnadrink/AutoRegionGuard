@@ -22,6 +22,7 @@ public class ARGPlayerListener extends PlayerListener {
     private final ARG plugin;
     public static int infotool;
     public static int unclaimtool;
+    public static boolean protectchests;
 
     public ARGPlayerListener(final ARG plugin) {
         this.plugin = plugin;
@@ -63,14 +64,16 @@ public class ARGPlayerListener extends PlayerListener {
     	if (clickedblock != null){
     		Player player = event.getPlayer();
     		if (clickedblock.getType() == Material.CHEST){
-    			Chunk newchunk = clickedblock.getChunk();
-    			String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
-    			if (claimcheck == ""){
-    				//RegionHandler.BlockCounter(player, newchunk);
-    			}else{
-    				if (plugin.RegionHandler.CanBuildHere(player, newchunk) == false){
-    					event.setCancelled(true);
-    					player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't steal here.");
+    			if (protectchests){
+    				Chunk newchunk = clickedblock.getChunk();
+    				String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
+    				if (claimcheck == ""){
+    					//RegionHandler.BlockCounter(player, newchunk);
+    				}else{
+    					if (plugin.RegionHandler.CanBuildHere(player, newchunk) == false){
+    						event.setCancelled(true);
+    						player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't steal here.");
+    					}
     				}
     			}
     		}
