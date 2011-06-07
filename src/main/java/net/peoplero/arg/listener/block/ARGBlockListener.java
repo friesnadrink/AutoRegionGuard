@@ -3,6 +3,7 @@ package net.peoplero.arg.listener.block;
 import net.peoplero.arg.ARG;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -25,17 +26,20 @@ public class ARGBlockListener extends BlockListener {
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
 		//gather info on where the block was placed and who placed it
-        Chunk newchunk = event.getBlock().getChunk();
-    	final Player player = event.getPlayer();
-    	String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
-        if (claimcheck == ""){
-        	plugin.RegionHandler.BlockCounter(player, newchunk);
-        }else{
-        	if (plugin.RegionHandler.CanBuildHere(player, newchunk) == false){
-        		event.setBuild(false);
-        		player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't build here.");
-        	}
-        }
+		Material placedblock = event.getBlockPlaced().getType();
+		if (placedblock != Material.FIRE){
+			Chunk newchunk = event.getBlock().getChunk();
+			final Player player = event.getPlayer();
+			String claimcheck = plugin.RegionHandler.ClaimCheck(newchunk);
+			if (claimcheck == ""){
+				plugin.RegionHandler.BlockCounter(player, newchunk);
+			}else{
+				if (plugin.RegionHandler.CanBuildHere(player, newchunk) == false){
+					event.setBuild(false);
+					player.sendMessage(ChatColor.RED + "Chunk owned by " + claimcheck + ". You can't build here.");
+				}
+			}
+		}
 	}
     
 	@Override

@@ -1,6 +1,11 @@
 ChangeLog:
-0.4.1
-removed annoying fire debug message
+0.5
+fixed an ArrayIndexOutOfBoundsException when adding/removing friends
+flint and steel can no longer be used to claim
+fixed /arg toggle problem that involved typing the command twice to truly toggle
+added explosionprotection(true/false) as an option in arg.properties
+added protectchests(true/false) as an option in arg.properties
+added /arg give <playername> [<world> <chunkx> <chunkz>]. Must have arg.player(and arg.bypass if you dont own it). Gives <playername> the specified chunk.
 
 0.4
 added fire protection for claimed chunks(fire won't spread or destroy blocks in claims)
@@ -37,10 +42,7 @@ Initial Release
 
 
 To-Do:
-/arg give chunk
 add /help support
-add configurable options
-	toggle on/off by default
-	time to expire players
-	info tool
-	unclaim tool
+if I can figure out a good way of doing it, I'll make a dummy player for common areas
+add settings for individual players to set such as chestprotection
+notification of entrance/exit of claimed areas

@@ -1,8 +1,9 @@
 package net.peoplero.arg;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -28,12 +29,12 @@ public class ARG extends JavaPlugin {
     public static Server Server = null;
     public File directory;
     public static String name = "ARG";
-    public static String version = "0.4";
+    public static String version = "0.5";
     
     //Create the hashmap debugees
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
     //Create a list of godmode users
-	public final static ArrayList<String> godusers = new ArrayList<String>();
+	public final static Set<String> godusers = new HashSet<String>();
 	
 	//Links the ARGBlockListener
     private final ARGBlockListener blockListener = new ARGBlockListener(this);
@@ -105,7 +106,7 @@ public class ARG extends JavaPlugin {
         if (commandName.compareToIgnoreCase("arg") == 0) {
         	if (args.length == 0){
         		if (player != null){
-        			player.sendMessage(ChatColor.RED + "Usage: /arg [toggle, info, addfriend, removefriend, friends, unclaim, claim, removeplayer, save, load]");
+        			player.sendMessage(ChatColor.RED + "Usage: /arg [toggle, give, info, addfriend, removefriend, friends, unclaim, claim, removeplayer, save, load]");
         		}else{
         			System.out.println("Usage: /arg [removeplayer, save, load, checklastonline]");
         		}
@@ -183,7 +184,22 @@ public class ARG extends JavaPlugin {
         				//claim region player is standing in
         				RegionHandler.claimChunk(player, player.getLocation().getBlock().getChunk());
         			} else {
-        				player.sendMessage(ChatColor.RED + "You don't have arg.claim permisson to use that command");
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
+        			}
+        			return true;
+        		}
+        		if (args[0].compareToIgnoreCase("give") == 0) {
+        			if (pt.canuser(player)) {
+        				if (args.length == 5){
+        					RegionHandler.giveChunk(player, args[1].toLowerCase(), args[2].toLowerCase(), args[3].toLowerCase(), args[4].toLowerCase());
+        				}
+        				if (args.length == 2){
+        					RegionHandler.giveChunk(player, args[1].toLowerCase());
+        				}else{
+        					player.sendMessage(ChatColor.RED + "Usage: /arg give <playername> <chunkx> <chunkz>");
+        				}
+        			} else {
+        				player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			}
         			return true;
         		}
@@ -242,17 +258,17 @@ public class ARG extends JavaPlugin {
         		}
         		if (args[0].compareToIgnoreCase("addfriend") == 0){
         			if (pt.canuser(player)){
-        				if (args[1] != null){
+        				if (args.length == 2){
         					FriendHandler.addfriend(player, args[1]);
-        				} else return false;
+        				} else player.sendMessage(ChatColor.RED + "Usage: /arg addfriend <playername>");
         			} else player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			return true;
         		}
         		if (args[0].compareToIgnoreCase("removefriend") == 0){
         			if (pt.canuser(player)){
-        				if (args[1] != null){
+        				if (args.length == 2){
         					FriendHandler.removefriend(player, args[1]);
-        				} else return false;
+        				} else player.sendMessage(ChatColor.RED + "Usage: /arg removefriend <playername>");
         			} else player.sendMessage(ChatColor.RED + "You don't have permisson to use that command");
         			return true;
         		}

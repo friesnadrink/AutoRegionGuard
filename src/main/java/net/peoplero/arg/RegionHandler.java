@@ -1,6 +1,5 @@
 package net.peoplero.arg;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +21,7 @@ public class RegionHandler {
 	//Create hashmap for players' current chunk
     private final static Map<String, Chunk> ExistingChunk = new HashMap<String, Chunk>();
     //Create hashmap for owned regions
-    private static Map<String, ArrayList<String>> OwnedRegions = new HashMap<String, ArrayList<String>>(); 
+    private static Map<String, Set<String>> OwnedRegions = new HashMap<String, Set<String>>(); 
     //Create hashmap for tracking the last time a player was online
     private static Map<String, Date> LastOnline = new HashMap<String, Date>(); 
     //Create hashmap for counting changes in players' current chunk
@@ -79,10 +78,10 @@ public class RegionHandler {
 			String strchunk = getstrchunk(targetchunk);
 			String playername = player.getName().toLowerCase();
 			if (OwnedRegions.containsKey(playername) == false){
-				ArrayList<String> list = new ArrayList<String>();
+				Set<String> list = new HashSet<String>();
 				OwnedRegions.put(playername, list);
 			}
-			ArrayList<String> list = OwnedRegions.get(playername);
+			Set<String> list = OwnedRegions.get(playername);
 			if (list.size() < maxchunks || plugin.pt.canbypass(player)){
 				list.add(strchunk);
 				OwnedRegions.put(playername, list);
@@ -91,6 +90,65 @@ public class RegionHandler {
 			}else{
 				player.sendMessage(ChatColor.RED + "Cannot claim! Chunk Cap of " + maxchunks + " reached!");
 			}
+		}
+	}
+	
+	public void giveChunk(Player player, String receiver, String world, String chunkx, String chunkz) {
+		String strchunk = world + " " + chunkx + " " + chunkz;
+		String playername = player.getName().toLowerCase();
+		String claimcheck = ClaimCheck(strchunk);
+		if (claimcheck.compareToIgnoreCase(playername) != 0 && plugin.pt.canbypass(player) == false){
+			player.sendMessage(ChatColor.RED + "You don't own chunk " + strchunk);
+			return;
+		}
+		if (OwnedRegions.containsKey(receiver) == false){
+			Set<String> list = new HashSet<String>();
+			OwnedRegions.put(receiver, list);
+		}
+		Set<String> list = OwnedRegions.get(receiver);
+		if (list.size() < maxchunks || plugin.pt.canbypass(player)){
+			if (claimcheck != ""){
+				unClaimChunk(player, world, chunkx, chunkz);
+			}
+			list.add(strchunk);
+			OwnedRegions.put(receiver, list);
+			player.sendMessage(ChatColor.YELLOW + "You have given '" + strchunk + "' to " + receiver);
+			Player owner = ARG.Server.getPlayer(receiver);
+			if (owner != null){
+				owner.sendMessage(ChatColor.YELLOW + player.getName() + " has given you chunk: " + strchunk);
+			}
+		}else{
+			player.sendMessage(ChatColor.RED + "Cannot give! Chunk Cap of " + maxchunks + " reached!");
+		}
+	}
+	
+	public void giveChunk(Player player, String receiver) {
+		Chunk targetchunk = player.getLocation().getBlock().getChunk();
+		String strchunk = getstrchunk(targetchunk);
+		String playername = player.getName().toLowerCase();
+		String claimcheck = ClaimCheck(strchunk);
+		if (claimcheck.compareToIgnoreCase(playername) != 0 && plugin.pt.canbypass(player) == false){
+			player.sendMessage(ChatColor.RED + "You don't own chunk " + strchunk);
+			return;
+		}
+		if (OwnedRegions.containsKey(receiver) == false){
+			Set<String> list = new HashSet<String>();
+			OwnedRegions.put(receiver, list);
+		}
+		Set<String> list = OwnedRegions.get(receiver);
+		if (list.size() < maxchunks || plugin.pt.canbypass(player)){
+			if (claimcheck != ""){
+				unClaimChunk(player, targetchunk);
+			}
+			list.add(strchunk);
+			OwnedRegions.put(receiver, list);
+			player.sendMessage(ChatColor.YELLOW + "You have given '" + strchunk + "' to " + receiver);
+			Player owner = ARG.Server.getPlayer(receiver);
+			if (owner != null){
+				owner.sendMessage(ChatColor.YELLOW + player.getName() + " has given you chunk: " + strchunk);
+			}
+		}else{
+			player.sendMessage(ChatColor.RED + "Cannot give! Chunk Cap of " + maxchunks + " reached!");
 		}
 	}
 	
@@ -210,7 +268,7 @@ public class RegionHandler {
 		if (plugin.pt.canbypass(player)) return true;
 		String playername = player.getName().toLowerCase();
 		if (OwnedRegions.containsKey(playername)){
-			ArrayList<String> list = OwnedRegions.get(playername);
+			Set<String> list = OwnedRegions.get(playername);
 			String strchunk = getstrchunk(targetchunk);
 			for (String string : list){
 				if (string.equalsIgnoreCase(strchunk)) return true;
@@ -307,7 +365,7 @@ public class RegionHandler {
 	public void checkLastOnline(){
 		int counter = 0;
 		long now = new Date().getTime();
-		ArrayList<String> list = new ArrayList<String>();
+		Set<String> list = new HashSet<String>();
 		for (String playername : LastOnline.keySet()){
 			long lo = LastOnline.get(playername).getTime();
 			if (lo < now-timetoexpire*86400000L){
@@ -341,8 +399,6 @@ public class RegionHandler {
 			CurrentChunkc.remove(playername);
 		}
 	}
-
-
 
 
 }

@@ -1,8 +1,9 @@
 package net.peoplero.arg;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 public class FriendHandler {
 	
 	ARG plugin;
-	static Map<String, ArrayList<String>> FriendsList = new HashMap<String, ArrayList<String>>(); 
+	static Map<String, Set<String>> FriendsList = new HashMap<String, Set<String>>(); 
 
 	FriendHandler(ARG plugin) {
 		this.plugin = plugin;
@@ -19,10 +20,10 @@ public class FriendHandler {
 	public void addfriend(Player player, String friend) {
 		String playername = player.getName().toLowerCase();
 		if (FriendsList.containsKey(playername) == false){
-			ArrayList<String> blanklist = new ArrayList<String>();
+			Set<String> blanklist = new HashSet<String>();
 			FriendsList.put(playername, blanklist);
 		}
-		ArrayList<String> list = FriendsList.get(playername);
+		Set<String> list = FriendsList.get(playername);
 		list.add(friend.toLowerCase());
 		FriendsList.put(playername, list);
 		player.sendMessage(ChatColor.YELLOW + "Added friend: " + friend);
@@ -57,10 +58,13 @@ public class FriendHandler {
 
 	public String listFriends(Player player) {
 		String friends = "";
-		for (String friend : FriendsList.get(player.getName().toLowerCase())){
-			friends = friends + " " + friend;
+		String playername = player.getName().toLowerCase();
+		if (FriendsList.containsKey(playername)){
+			for (String friend : FriendsList.get(playername)){
+				friends = friends + " " + friend;
+			}
+			friends = friends.trim().replace(" ", ", ");
 		}
-		friends = friends.trim().replace(" ", ", ");
 		return friends;
 	}
 

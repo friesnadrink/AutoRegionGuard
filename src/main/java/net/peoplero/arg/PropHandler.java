@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import net.peoplero.arg.listener.block.ARGBlockListener;
+import net.peoplero.arg.listener.entity.ARGEntityListener;
 import net.peoplero.arg.listener.player.ARGPlayerListener;
 
 public class PropHandler {
@@ -21,7 +22,8 @@ public class PropHandler {
     "fireprotection - (default true)true/false Protects claimed chunks from fire spread(blocks can still be set ablaze by flint and finder/lava)\n" + 
     "infotool - (default 287)ItemID to use as infotool\n" + 
     "unclaimtool - (default 288)ItemID to use as unclaimtool\n" +
-    "protectchests - (default true)true/false weather to protect chests in claimed chunks or not";
+    "protectchests - (default true)true/false weather to protect chests in claimed chunks or not\n" +
+    "explosionprotection - (default true)true/false weather to protect claimed chunks from explosions or not";
     
     static void loadProperties(){
     	RegionHandler.maxchunks = 30;
@@ -32,6 +34,7 @@ public class PropHandler {
     	ARGPlayerListener.infotool = 287;
     	ARGPlayerListener.unclaimtool = 288;
     	ARGPlayerListener.protectchests = true;
+    	ARGEntityListener.explosionprotection = true;
     	
     	if(!propfile.exists()){
     		try { //try catch clause explained below in tutorial
@@ -43,6 +46,7 @@ public class PropHandler {
     			storevalue("infotool", ARGPlayerListener.infotool);
     			storevalue("unclaimtool", ARGPlayerListener.unclaimtool);
     			storevalue("protectchests", ARGPlayerListener.protectchests);
+    			storevalue("explosionprotection", ARGEntityListener.explosionprotection);
     		} catch (IOException ex) {
     			ex.printStackTrace();
     		}
@@ -89,6 +93,11 @@ public class PropHandler {
     				ARGPlayerListener.protectchests = Boolean.parseBoolean(prop.getProperty("protectchests"));
     			}else{
     				storevalue("protectchests", ARGPlayerListener.protectchests);
+    			}
+    			if (prop.containsKey("explosionprotection")){
+    				ARGEntityListener.explosionprotection = Boolean.parseBoolean(prop.getProperty("explosionprotection"));
+    			}else{
+    				storevalue("explosionprotection", ARGEntityListener.explosionprotection);
     			}
     			in.close(); //Closes the input stream.
     		}catch (IOException ex){

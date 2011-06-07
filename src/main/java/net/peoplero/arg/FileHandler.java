@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class FileHandler {
@@ -62,8 +63,8 @@ public class FileHandler {
 	/*
 	 * Reads data from a given file
 	 */
-	public static ArrayList<String> readFromFile(String fileName) {
-		ArrayList<String> lines = new ArrayList<String>();
+	public static Set<String> readFromFile(String fileName) {
+		Set<String> lines = new HashSet<String>();
 		try {
 			File inFile = new File(fileName);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
@@ -92,7 +93,7 @@ public class FileHandler {
 		return file.delete();
 	}
 
-	public static void saveMultiMap(Map<String, ArrayList<String>> multiMap, String file){
+	public static void saveMultiMap(Map<String, Set<String>> multiMap, String file){
 		String filepath = strpath + file;
 		if (isFileExists(filepath)) deleteFile(filepath);
 		int counter = 0;
@@ -106,22 +107,22 @@ public class FileHandler {
 		log.info("[ARG] Saved "+counter+ " items in " + file);
 	}
 	
-	public static Map<String, ArrayList<String>> loadMultiMap(String file){
-		Map<String, ArrayList<String>> multiMap = new HashMap<String, ArrayList<String>>();
+	public static Map<String, Set<String>> loadMultiMap(String file){
+		Map<String, Set<String>> multiMap = new HashMap<String, Set<String>>();
 		String filepath = strpath + file;
 		int counter = 0;
 		if (isFileExists(filepath)){
-			ArrayList<String> lines = readFromFile(filepath);
+			Set<String> lines = readFromFile(filepath);
 			for (String line : lines){
 				String[] something = line.split(";");
 				if (something.length == 2){
 					String playername=something[0].toLowerCase();
 					String strvalue=something[1].toLowerCase();
 					if (multiMap.containsKey(playername) == false){
-						ArrayList<String> list = new ArrayList<String>();
+						Set<String> list = new HashSet<String>();
 						multiMap.put(playername, list);
 					}
-					ArrayList<String> list = multiMap.get(playername);
+					Set<String> list = multiMap.get(playername);
 					list.add(strvalue);
 					multiMap.put(playername, list);
 					//System.out.println("loaded "+playername+";"+strchunk+".");
@@ -153,7 +154,7 @@ public class FileHandler {
 		int counter = 0;
 		if (isFileExists(filepath)){
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/HH");
-			ArrayList<String> lines = readFromFile(filepath);
+			Set<String> lines = readFromFile(filepath);
 			for (String line : lines){
 				String[] something = line.split(";");
 				if (something.length == 2){

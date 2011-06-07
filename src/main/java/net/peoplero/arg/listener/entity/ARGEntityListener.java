@@ -12,6 +12,7 @@ public class ARGEntityListener extends EntityListener {
 	
 
     private final ARG plugin;
+    public static boolean explosionprotection;
 
     public ARGEntityListener(final ARG plugin) {
         this.plugin = plugin;
@@ -34,8 +35,10 @@ public class ARGEntityListener extends EntityListener {
     
     @Override
 	public void onEntityExplode(EntityExplodeEvent event){
-    	for (Block block : event.blockList()){
-    		if (plugin.RegionHandler.ClaimCheck(block.getChunk()) != "") event.setCancelled(true);
+    	if (explosionprotection){
+    		for (Block block : event.blockList()){
+    			if (plugin.RegionHandler.ClaimCheck(block.getChunk()) != "") event.setCancelled(true);
+    		}
     	}
 	}
     
