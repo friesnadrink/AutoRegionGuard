@@ -23,13 +23,15 @@ public class PropHandler {
     "infotool - (default 287)ItemID to use as infotool\n" + 
     "unclaimtool - (default 288)ItemID to use as unclaimtool\n" +
     "protectchests - (default true)true/false weather to protect chests in claimed chunks or not\n" +
-    "explosionprotection - (default true)true/false weather to protect claimed chunks from explosions or not";
+    "explosionprotection - (default true)true/false weather to protect claimed chunks from explosions or not\n"+
+    "plotcost - (default 1000)cost to claim a plot";
     
     static void loadProperties(){
     	RegionHandler.maxchunks = 30;
     	RegionHandler.timetoexpire = 30;
     	RegionHandler.autoclaimdefault = true;
     	RegionHandler.claimthreshold = 16;
+    	RegionHandler.plotcost = 1000;
     	ARGBlockListener.fireprotection = true;
     	ARGPlayerListener.infotool = 287;
     	ARGPlayerListener.unclaimtool = 288;
@@ -47,6 +49,7 @@ public class PropHandler {
     			storevalue("unclaimtool", ARGPlayerListener.unclaimtool);
     			storevalue("protectchests", ARGPlayerListener.protectchests);
     			storevalue("explosionprotection", ARGEntityListener.explosionprotection);
+    			storevalue("plotcost", RegionHandler.plotcost);
     		} catch (IOException ex) {
     			ex.printStackTrace();
     		}
@@ -99,6 +102,11 @@ public class PropHandler {
     			}else{
     				storevalue("explosionprotection", ARGEntityListener.explosionprotection);
     			}
+    			if (prop.containsKey("plotcost")){
+    				RegionHandler.plotcost = Integer.parseInt(prop.getProperty("plotcost"));
+    			}else{
+    				storevalue("plotcost", RegionHandler.plotcost);
+    			}
     			in.close(); //Closes the input stream.
     		}catch (IOException ex){
     			ex.printStackTrace();
@@ -107,6 +115,18 @@ public class PropHandler {
     }
     
     static void storevalue(String key, Integer value){
+    	try {
+			FileOutputStream out = new FileOutputStream(propfile);
+			prop.put(key, String.valueOf(value));
+			prop.store(out, description);
+			out.flush();  //Explained below in tutorial
+			out.close(); //Closes the output stream as it is not needed anymore.
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+    }
+    
+    static void storevalue(String key, Float value){
     	try {
 			FileOutputStream out = new FileOutputStream(propfile);
 			prop.put(key, String.valueOf(value));

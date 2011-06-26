@@ -11,6 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
+import com.iConomy.iConomy;
+
 public class RegionHandler {
 	
 	public static Logger log = Logger.getLogger("Minecraft");
@@ -27,10 +29,14 @@ public class RegionHandler {
     //Create hashmap for counting changes in players' current chunk
     private final static Map<String, Integer> CurrentChunkc = new HashMap<String, Integer>();
     
+    public iConomy iConomy = null;
+    
     public static boolean autoclaimdefault;
 	public static int maxchunks;
 	public static int timetoexpire;
 	public static int claimthreshold;
+	public static float plotcost;
+	
 	
 	RegionHandler(ARG plugin) {
 		this.plugin = plugin;
@@ -75,6 +81,11 @@ public class RegionHandler {
 				player.sendMessage(ChatColor.RED + "Chunk is already claimed!");
 				return;
 			}
+			if(iConomy!=null && !iConomy.getAccount(player.getName()).getHoldings().hasEnough(plotcost))
+			{
+				player.sendMessage(ChatColor.RED + "You need " + (plotcost - iConomy.getAccount(player.getName()).getHoldings().balance()) + " more coins to claim this.");
+				return;
+			}
 			String strchunk = getstrchunk(targetchunk);
 			String playername = player.getName().toLowerCase();
 			if (OwnedRegions.containsKey(playername) == false){
@@ -85,6 +96,7 @@ public class RegionHandler {
 			if (list.size() < maxchunks || plugin.pt.canbypass(player)){
 				list.add(strchunk);
 				OwnedRegions.put(playername, list);
+				iConomy.getAccount(player.getName()).getHoldings().subtract(plotcost);
 				player.sendMessage(ChatColor.YELLOW + "You have claimed chunk " + strchunk);
 				player.sendMessage(ChatColor.YELLOW + "You now own " + list.size() + " chunks.");
 			}else{

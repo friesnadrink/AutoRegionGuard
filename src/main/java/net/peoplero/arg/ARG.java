@@ -21,6 +21,8 @@ import net.peoplero.arg.listener.block.ARGBlockListener;
 import net.peoplero.arg.listener.entity.ARGEntityListener;
 import net.peoplero.arg.listener.player.ARGPlayerListener;
 
+import com.iConomy.iConomy;
+
 public class ARG extends JavaPlugin {
 	
     public static Logger log = Logger.getLogger("Minecraft");
@@ -81,7 +83,10 @@ public class ARG extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_BUCKET_FILL, playerListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.High, this);
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.High, this);
-
+		if(pm.isPluginEnabled("iConomy"))
+		{
+			RegionHandler.iConomy = (iConomy)pm.getPlugin("iConomy");
+		}
 		//Get the information from the yml file.
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//setup permissions
